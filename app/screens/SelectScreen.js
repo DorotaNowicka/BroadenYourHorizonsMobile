@@ -1,17 +1,26 @@
 import React from "react";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import { StyleSheet, View } from "react-native";
 import AppButton from "../components/AppButton";
 import ContinentButton from "../components/selection/ContinentButton";
 import { Formik } from "formik";
+import * as Yup from "yup";
 
 import continents from "../assets/continents";
-import PickerItem from "../components/PickerItem";
-import AppPicker from "../components/AppPicker";
+
 import AppFormPicker from "../components/selection/AppFormPicker";
 import AppText from "../components/AppText";
 import Header from "../components/Header";
 import routes from "../navigation/routes";
+import colors from "../config/colors";
+
+const validationSchema = Yup.object().shape({
+  continent: Yup.string().required("Continent is required"),
+  number: Yup.number()
+    .typeError("Number must be a valid number")
+    .min(2, "Number must be at least 2")
+    .max(10, "Number must be at most 10")
+    .required("Number is required"),
+});
 
 function SelectScreen({ navigation }) {
   return (
@@ -22,15 +31,15 @@ function SelectScreen({ navigation }) {
           continent: "",
           number: 2,
         }}
+        validationSchema={validationSchema}
         onSubmit={(values) => {
-          console.log(values);
           navigation.navigate(routes.DISCOVER_SCREEN, { values: values });
         }}
       >
         {({
-          setFieldValue,
-          handleChange,
-          handleBlur,
+          errors,
+          touched,
+
           handleSubmit,
           values,
         }) => (
@@ -60,6 +69,9 @@ function SelectScreen({ navigation }) {
               />
             </View>
             <AppButton title="SEARCH" onPress={handleSubmit} width={250} />
+            {errors.continent && touched.continent && (
+              <AppText style={styles.error}>{errors.continent}</AppText>
+            )}
           </View>
         )}
       </Formik>
@@ -79,6 +91,9 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "center",
     padding: 2,
+  },
+  error: {
+    color: colors.wrong,
   },
   numberContainer: {
     flexDirection: "row",
