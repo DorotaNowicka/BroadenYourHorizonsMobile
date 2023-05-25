@@ -24,7 +24,7 @@ function SelectScreen({ navigation }) {
         }}
         onSubmit={(values) => {
           console.log(values);
-          navigation.navigate(routes.DISCOVER_SCREEN);
+          navigation.navigate(routes.DISCOVER_SCREEN, { values: values });
         }}
       >
         {({
